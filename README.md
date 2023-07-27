@@ -10,4 +10,7 @@ Run the following commands for Database
 
 ## Seeding Databse
 
--- Visit /api/seed to migrate all the categories and associated products
+-- Visit /api/seed parent path for migrations
+-- First visit /api/seed/category for Category Migrations
+-- Second visit /api/seed/product for Product Migrations
+-- In case of any data reset, use `npx prisma migrate reset` to reset the data

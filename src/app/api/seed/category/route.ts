@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const prisma = new PrismaClient();
 
@@ -28,6 +27,7 @@ export async function GET() {
     });
 
     await Promise.all(categoryPromises);
+
     return NextResponse.json({
       success: true,
     });
@@ -35,7 +35,7 @@ export async function GET() {
     if (error.code === "P2002") {
       return NextResponse.json({
         success: false,
-        message: "Category already exists",
+        message: "Categories already exist",
       });
     }
     return NextResponse.json({
