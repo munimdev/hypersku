@@ -7,9 +7,19 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model Contact {
-  id String @id @default(cuid())
-  firstname String
-  lastname String
-  email String
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  products Product[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
+
+  @@index([name, description])
 }
