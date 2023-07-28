@@ -5,6 +5,15 @@
 /.pnp
 .pnp.js
 
+# database
+/prisma/migrations
+/prisma/dev.db
+/prisma/dev.db-journal
+
+# yarn
+.yarnrc.yml
+/.yarn
+
 # testing
 /coverage
 
