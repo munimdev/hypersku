@@ -22,7 +22,7 @@ export default function Home() {
 
   useEffect(() => {
     (async function () {
-      const response = await axiosInterceptorInstance.get("/product");
+      const response = await axiosInterceptorInstance.get("/product?limit=4");
       console.log(response.data.product);
       setProducts(response.data.product);
     })();
