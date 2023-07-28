@@ -21,6 +21,7 @@ model Product {
   category    Category @relation(fields: [categoryId], references: [id])
   categoryId  String
   rating      Float?
+  image       String? @default("https://placehold.co/500x500")
 
   @@index([name, description])
 }
