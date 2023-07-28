@@ -23,8 +23,8 @@ type Props = {
 
 const SearchBar: React.FC<Props> = ({ categories }) => {
   return (
-    <div className="flex flex-row justify-center items-center gap-2 md:gap-20">
-      <div className="flex flex-row border border-gray-200 flex-1">
+    <div className="flex flex-row items-center justify-center gap-2 md:gap-20">
+      <div className="flex flex-row flex-1 border border-gray-200">
         <Input
           placeholder="Enter Keyword, SKU, SPU"
           className="border-none outline-none"
@@ -32,7 +32,7 @@ const SearchBar: React.FC<Props> = ({ categories }) => {
         {/* Category Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-52 rounded-none">
+            <Button variant="outline" className="rounded-none w-52">
               All Category
             </Button>
           </DropdownMenuTrigger>
@@ -40,8 +40,8 @@ const SearchBar: React.FC<Props> = ({ categories }) => {
             <DropdownMenuLabel>All Category</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              {categories.map((category) => (
-                <DropdownMenuItem>
+              {categories.map((category, index) => (
+                <DropdownMenuItem key={index}>
                   <span>{category.name}</span>
                 </DropdownMenuItem>
               ))}
