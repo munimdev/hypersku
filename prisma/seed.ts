@@ -1,7 +1,18 @@
-import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-
 const prisma = new PrismaClient();
+
+const categories = [
+  "Women's Clothing",
+  "Men's Clothing",
+  "Pet Supplies",
+  "Mother/Kids/Baby",
+  "Toys Hobbies",
+  "Fashion Jewelry",
+  "Shoes",
+  "Luggage Bags",
+  "Furniture",
+  "Lights Lighting",
+];
 
 const products = [
   {
@@ -48,10 +59,24 @@ const products = [
   },
 ];
 
-export async function GET() {
-  try {
-    for (const product of products) {
-      await prisma.product.create({
+async function main() {
+  const categoryTransaction = [];
+  for (const category of categories) {
+    categoryTransaction.push(
+      prisma.category.create({
+        data: {
+          name: category,
+        },
+      })
+    );
+  }
+  await prisma.$transaction(categoryTransaction);
+
+  const productTransaction = [];
+
+  for (const product of products) {
+    productTransaction.push(
+      prisma.product.create({
         data: {
           name: product.name,
           description: product.description,
@@ -63,21 +88,18 @@ export async function GET() {
             },
           },
         },
-      });
-    }
-
-    return NextResponse.json({
-      success: true,
-    });
-  } catch (error: any) {
-    if (error.code === "P2002") {
-      return NextResponse.json({
-        success: false,
-        message: "Products already exists",
-      });
-    }
-    return NextResponse.json({
-      message: error.message,
-    });
+      })
+    );
   }
+
+  await prisma.$transaction(productTransaction);
 }
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
