@@ -7,6 +7,7 @@ import Section from "@/components/ui/section";
 import axiosInterceptorInstance from "./interceptor";
 import { TCategory } from "@/types/category";
 import { TProduct } from "@/types/product";
+import Link from "next/link";
 
 export default function Home() {
   const [categories, setCategories] = useState<TCategory[]>([]);
@@ -33,9 +34,11 @@ export default function Home() {
       <SearchBar categories={categories} />
       <div className="grid grid-cols-5">
         {categories?.map((category) => (
-          <div key={category.id} className="col-span-1">
-            <Category name={category.name} />
-          </div>
+          <Link href={`/category/${category.id}`} key={category.id}>
+            <div key={category.id} className="col-span-1">
+              <Category name={category.name} />
+            </div>
+          </Link>
         ))}
       </div>
       <Section title="Best Seller">{products}</Section>
