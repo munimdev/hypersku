@@ -7,6 +7,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const categoryId = searchParams.get("categoryId");
   const priceRange = searchParams.get("priceRange");
+  const search = searchParams.get("keyword") || "";
   const higherPrice = priceRange?.split("-")?.[1];
   const lowerPrice = priceRange?.split("-")?.[0];
   const deliveryTime = searchParams.get("deliveryTime");
@@ -34,6 +35,9 @@ export async function GET(req: Request) {
 
   const query = {
     where: {
+      name: {
+        contains: search as string,
+      },
       categoryId: categoryId as string,
       price: {
         gte: lowerPrice ? lowerPrice : "0",
@@ -49,16 +53,18 @@ export async function GET(req: Request) {
 
   const products = await prisma.product.findMany(query);
 
-  const totalCount = await prisma.product.count(query);
+  const totalCount = await prisma.product.count({ where: query.where });
   const hasNextPage = skip + Number(limit) < totalCount;
   const hasPrevPage = Number(page) > 1;
 
   return NextResponse.json({
     categoryInfo,
     products,
-    limit: Number(limit),
-    totalCount,
-    hasNextPage,
-    hasPrevPage,
+    pagination: {
+      totalPages: Math.ceil(totalCount / Number(limit)),
+      totalCount,
+      hasNextPage,
+      hasPrevPage,
+    },
   });
 }

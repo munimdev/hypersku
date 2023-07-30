@@ -1,25 +1,40 @@
 import { useAtom } from "jotai";
-import { pageAtom } from "@/store/atoms";
+import { paginationAtom } from "@/store/atoms";
 
 const Pagination = () => {
-  const [page, setPage] = useAtom(pageAtom);
+  const [pagination, setPagination] = useAtom(paginationAtom);
 
   const changePage = (newPage: number) => {
-    setPage(newPage);
+    setPagination({
+      ...pagination,
+      page: newPage,
+    });
   };
 
   const prevPage = () => {
-    if (page > 1) setPage(page - 1);
+    if (pagination.hasPrevPage)
+      setPagination({
+        ...pagination,
+        page: pagination.page - 1,
+      });
   };
 
   const nextPage = () => {
-    setPage(page + 1);
+    if (pagination.hasNextPage)
+      setPagination({
+        ...pagination,
+        page: pagination.page + 1,
+      });
   };
 
   const getPages = () => {
-    let pages = [page - 2, page - 1, page, page + 1, page + 2].filter(
-      (p) => p > 0
-    ); // Adjust this to your own needs
+    let pages = [
+      pagination.page - 2,
+      pagination.page - 1,
+      pagination.page,
+      pagination.page + 1,
+      pagination.page + 2,
+    ].filter((p) => p > 0 && p <= pagination.totalPages); // Adjust this to your own needs
     return pages;
   };
 
@@ -39,7 +54,7 @@ const Pagination = () => {
             <button
               onClick={() => changePage(p)}
               className={`flex items-center justify-center h-8 px-3 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white ${
-                p === page
+                p === pagination.page
                   ? "text-blue-600 bg-blue-50"
                   : "text-gray-500 bg-white"
               }`}

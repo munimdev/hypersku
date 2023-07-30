@@ -1,4 +1,9 @@
 import React from "react";
+import { useAtom } from "jotai";
+import { filterAtom, paginationAtom, categoryInfoAtom } from "@/store/atoms";
+import { useFetch } from "@/hooks";
+import { TCategory } from "@/types/category";
+
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -6,25 +11,43 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { TCategory } from "@/types/category";
-import { useAtom } from "jotai";
-import { searchAtom } from "@/store/atoms";
 
 type Props = {
   categories: TCategory[];
 };
 
 const SearchBar: React.FC<Props> = ({ categories }) => {
-  const [keyword, setKeyword] = useAtom(searchAtom);
+  const [pagination, setPagination] = useAtom(paginationAtom);
+  const [categoryInfo, setCategoryInfo] = useAtom(categoryInfoAtom);
+  const [filter, setFilter] = useAtom(filterAtom);
+
+  const onSearchHandler = () => {
+    let queryParams = new URLSearchParams();
+    if (categoryInfo.id) queryParams.append("categoryId", categoryInfo.id);
+    if (filter?.keyword) queryParams.append("keyword", filter.keyword);
+    if (filter?.selectedPrice)
+      queryParams.append("priceRange", filter.selectedPrice);
+    if (filter?.selectedDelivery)
+      queryParams.append("deliveryTime", filter.selectedDelivery);
+    if (pagination.page) queryParams.append("page", pagination.page.toString());
+    const queryUrl = `/category/search?${queryParams.toString()}`;
+
+    useFetch(queryUrl)
+      .then((response) => {
+        setPagination((prev) => ({ ...prev, ...response.data.pagination }));
+        setCategoryInfo({
+          ...response.data.categoryInfo,
+          products: response.data.products,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <div className="flex flex-row items-center justify-center gap-2 md:gap-20">
@@ -32,9 +55,9 @@ const SearchBar: React.FC<Props> = ({ categories }) => {
         <Input
           placeholder="Enter Keyword, SKU, SPU"
           className="border-none outline-none"
-          value={keyword}
+          value={filter?.keyword}
           type="text"
-          onChange={(e) => setKeyword(e.target.value)}
+          onChange={(e) => setFilter({ ...filter!, keyword: e.target.value })}
         />
         {/* Category Dropdown */}
         <DropdownMenu>
@@ -59,6 +82,7 @@ const SearchBar: React.FC<Props> = ({ categories }) => {
       <Button
         type="button"
         className="px-10 py-2 bg-blue-700 hover:bg-blue-500"
+        onClick={onSearchHandler}
       >
         Search
       </Button>

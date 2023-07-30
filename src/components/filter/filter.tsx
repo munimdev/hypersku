@@ -1,4 +1,4 @@
-import { selectedDateAtom, priceAtom, deliveryTimeAtom } from "@/store/atoms";
+import { filterAtom } from "@/store/atoms";
 import { useAtom } from "jotai";
 import ProductFilter from "./productFilter";
 import { dateFilter, priceFilter, deliveryFilter } from "@/data/filters";
@@ -6,15 +6,14 @@ import { dateFilter, priceFilter, deliveryFilter } from "@/data/filters";
 type FilterProps = {};
 
 const Filter: React.FC<FilterProps> = ({}) => {
-  const [selectedDate, setSelectedDate] = useAtom(selectedDateAtom);
-  const [selectedPrice, setSelectedPrice] = useAtom(priceAtom);
-  const [selectedDeliveryTime, setSelectedDeliveryTime] =
-    useAtom(deliveryTimeAtom);
+  const [filter, setFilter] = useAtom(filterAtom);
 
   const clearFilters = () => {
-    setSelectedDate("");
-    setSelectedPrice("");
-    setSelectedDeliveryTime("");
+    setFilter({
+      selectedDate: "",
+      selectedPrice: "",
+      selectedDelivery: "",
+    });
   };
 
   return (
@@ -28,17 +27,17 @@ const Filter: React.FC<FilterProps> = ({}) => {
       <ProductFilter
         title="Date"
         filter={dateFilter}
-        onChange={setSelectedDate}
+        onChange={(e: string) => setFilter({ ...filter!, selectedDate: e })}
       />
       <ProductFilter
         title="Price"
         filter={priceFilter}
-        onChange={setSelectedPrice}
+        onChange={(e: string) => setFilter({ ...filter!, selectedPrice: e })}
       />
       <ProductFilter
         title="Delivery"
         filter={deliveryFilter}
-        onChange={setSelectedDeliveryTime}
+        onChange={(e: string) => setFilter({ ...filter!, selectedDelivery: e })}
       />
     </div>
   );
