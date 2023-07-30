@@ -1,0 +1,10 @@
+# Use the official PostgreSQL image as base
+FROM postgres:12-alpine
+
+# Environment variables to customize the PostgreSQL instance
+ENV POSTGRES_USER=root
+ENV POSTGRES_PASSWORD=root
+ENV POSTGRES_DB=hypersku
+
+# Expose PostgreSQL port
+EXPOSE 5051

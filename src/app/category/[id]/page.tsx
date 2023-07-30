@@ -11,6 +11,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import Breadcrumb from "@/components/misc/Breadcrumb";
+import SubNav from "@/components/ui/subnav";
+import Filter from "@/components/filter/filter";
+import Pagination from "@/components/ui/pagination";
 
 type TCategoryWithProducts = TCategory & {
   products: TProduct[];
@@ -20,6 +24,7 @@ export default function CategoryItems({ params }: { params: { id: string } }) {
   const [categoryInfo, setCategoryInfo] = useState<TCategoryWithProducts>({
     id: "",
     name: "",
+    subCategories: [],
     products: [],
   });
   const [categories, setCategories] = useState<TCategory[]>([]);
@@ -37,14 +42,15 @@ export default function CategoryItems({ params }: { params: { id: string } }) {
     });
 
   const id = params.id;
-  console.log(id);
 
   useEffect(() => {
     axiosInterceptorInstance
       .get(`/category/search?categoryId=${id}`)
       .then((response) => {
-        console.log(response.data);
-        setCategoryInfo(response.data);
+        setCategoryInfo({
+          ...response.data.categoryInfo,
+          products: response.data.products,
+        });
       })
       .catch((error) => {
         console.log(error);
@@ -54,27 +60,23 @@ export default function CategoryItems({ params }: { params: { id: string } }) {
   useEffect(() => {
     (async function () {
       const response = await axiosInterceptorInstance.get("/category");
-      console.log(response.data.categories);
       setCategories(response.data.categories);
     })();
   }, []);
 
   return (
-    <main className="flex flex-col w-full min-h-screen p-5 py-20 mx-auto md:11/12 lg:w-10/12 xl:w-8/12 gap-y-10">
-      <SearchBar categories={categories} />
-      <div className="grid grid-cols-5">
-        {categories?.map((category) => (
-          <Link href={`/category/${category.id}`} key={category.id}>
-            <div key={category.id} className="col-span-1">
-              <Category name={category.name} />
-            </div>
-          </Link>
-        ))}
+    <main className="flex flex-row w-full min-h-screen p-5 py-20 mx-auto md:11/12 lg:w-10/12 xl:w-8/12 gap-x-5">
+      <div className="w-5/12">
+        <Filter />
       </div>
-      <hr className="w-full h-1 my-10 bg-gray-300" />
-      <div className="flex justify-between space-x-8"></div>
-      <hr className="w-full h-1 my-10 bg-gray-300" />
-      <Section title={categoryInfo.name}>{categoryInfo.products}</Section>
+      <div className="flex flex-col gap-y-10">
+        <SearchBar categories={categories} />
+        <Breadcrumb navLinks={[categoryInfo.name]} />
+        <SubNav navLinks={categoryInfo.subCategories} />
+        <div className="flex justify-between space-x-8"></div>
+        <Section title={categoryInfo.name}>{categoryInfo.products}</Section>
+        <Pagination />
+      </div>
     </main>
   );
 }

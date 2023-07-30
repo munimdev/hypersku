@@ -3,25 +3,36 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Category {
-  id       String    @id @default(cuid())
-  name     String    @unique
-  products Product[]
+  id            String        @id @default(cuid())
+  name          String        @unique
+  products      Product[]
+  subCategories SubCategory[]
+}
+
+model SubCategory {
+  id               String    @id @default(cuid())
+  name             String    @unique
+  parentCategory   Category  @relation(fields: [parentCategoryId], references: [id])
+  parentCategoryId String
+  products         Product[]
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  price       Float
-  category    Category @relation(fields: [categoryId], references: [id])
-  categoryId  String
-  rating      Float?
-  image       String? @default("https://placehold.co/500x500")
+  id            String       @id @default(cuid())
+  name          String
+  description   String?
+  price         Float
+  category      Category     @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  rating        Float?
+  image         String?      @default("https://placehold.co/500x500")
+  subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
+  subCategoryId String?
 
   @@index([name, description])
 }

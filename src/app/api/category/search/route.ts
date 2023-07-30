@@ -11,6 +11,9 @@ export async function GET(req: Request) {
     where: {
       id: categoryId as string,
     },
+    include: {
+      subCategories: true,
+    },
   });
 
   const products = await prisma.product.findMany({
