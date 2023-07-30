@@ -26,7 +26,8 @@ model Product {
   id            String       @id @default(cuid())
   name          String
   description   String?
-  price         Float
+  price         String
+  deliveryTime  String
   category      Category     @relation(fields: [categoryId], references: [id])
   categoryId    String
   rating        Float?

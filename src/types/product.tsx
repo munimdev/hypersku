@@ -1,8 +1,9 @@
 export type TProduct = {
+  deliveryTime: string;
   id: string;
   name: string;
   description: string;
-  price: number;
+  price: string;
   category: string;
   categoryId: string;
   rating: number;

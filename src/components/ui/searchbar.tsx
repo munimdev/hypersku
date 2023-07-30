@@ -16,18 +16,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { TCategory } from "@/types/category";
+import { useAtom } from "jotai";
+import { searchAtom } from "@/store/atoms";
 
 type Props = {
   categories: TCategory[];
 };
 
 const SearchBar: React.FC<Props> = ({ categories }) => {
+  const [keyword, setKeyword] = useAtom(searchAtom);
+
   return (
     <div className="flex flex-row items-center justify-center gap-2 md:gap-20">
       <div className="flex flex-row flex-1 border border-gray-200">
         <Input
           placeholder="Enter Keyword, SKU, SPU"
           className="border-none outline-none"
+          value={keyword}
+          type="text"
+          onChange={(e) => setKeyword(e.target.value)}
         />
         {/* Category Dropdown */}
         <DropdownMenu>
