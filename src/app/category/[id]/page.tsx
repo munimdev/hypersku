@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useAtom, useAtomValue } from "jotai";
-import { paginationAtom, filterAtom, categoryInfoAtom } from "@/store/atoms";
+import {
+  categoriesAtom,
+  paginationAtom,
+  filterAtom,
+  categoryInfoAtom,
+} from "@/store/atoms";
 import { useFetch } from "@/hooks";
-
-import { TCategory } from "@/types/category";
 
 import Section from "@/components/ui/section";
 import SearchBar from "@/components/ui/searchbar";
@@ -16,10 +19,11 @@ import Pagination from "@/components/ui/pagination";
 
 export default function CategoryItems({ params }: { params: { id: string } }) {
   const [categoryInfo, setCategoryInfo] = useAtom(categoryInfoAtom);
-  const [categories, setCategories] = useState<TCategory[]>([]);
+  const categories = useAtomValue(categoriesAtom);
   const filter = useAtomValue(filterAtom);
   const [pagination, setPagination] = useAtom(paginationAtom);
   const id = params.id;
+  const { refetch: filterRefetch } = useFetch("", { enabled: false });
 
   useEffect(() => {
     let queryParams = new URLSearchParams();
@@ -32,25 +36,18 @@ export default function CategoryItems({ params }: { params: { id: string } }) {
     if (pagination.page) queryParams.append("page", pagination.page.toString());
     const queryUrl = `/category/search?${queryParams.toString()}`;
 
-    useFetch(queryUrl)
-      .then((response) => {
-        setPagination((prev) => ({ ...prev, ...response.data.pagination }));
+    filterRefetch(queryUrl)
+      .then((resp) => {
+        setPagination((prev) => ({ ...prev, ...resp.data.pagination }));
         setCategoryInfo({
-          ...response.data.categoryInfo,
-          products: response.data.products,
+          ...resp.data.categoryInfo,
+          products: resp.data.products,
         });
       })
       .catch((error) => {
         console.log(error);
       });
   }, [id, pagination.page]);
-
-  useEffect(() => {
-    (async function () {
-      const response = await useFetch("/category");
-      setCategories(response.data.categories);
-    })();
-  }, []);
 
   return (
     <main className="flex flex-row w-full min-h-screen p-5 py-20 mx-auto md:11/12 lg:w-10/12 xl:w-8/12 gap-x-5">

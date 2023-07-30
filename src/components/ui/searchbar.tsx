@@ -25,6 +25,8 @@ const SearchBar: React.FC<Props> = ({ categories }) => {
   const [categoryInfo, setCategoryInfo] = useAtom(categoryInfoAtom);
   const [filter, setFilter] = useAtom(filterAtom);
 
+  const { refetch } = useFetch("", { enabled: false });
+
   const onSearchHandler = () => {
     let queryParams = new URLSearchParams();
     if (categoryInfo.id) queryParams.append("categoryId", categoryInfo.id);
@@ -36,7 +38,7 @@ const SearchBar: React.FC<Props> = ({ categories }) => {
     if (pagination.page) queryParams.append("page", pagination.page.toString());
     const queryUrl = `/category/search?${queryParams.toString()}`;
 
-    useFetch(queryUrl)
+    refetch(queryUrl)
       .then((response) => {
         setPagination((prev) => ({ ...prev, ...response.data.pagination }));
         setCategoryInfo({

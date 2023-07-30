@@ -10,6 +10,7 @@ const Filter: React.FC<FilterProps> = ({}) => {
 
   const clearFilters = () => {
     setFilter({
+      keyword: "",
       selectedDate: "",
       selectedPrice: "",
       selectedDelivery: "",

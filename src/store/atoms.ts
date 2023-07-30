@@ -1,7 +1,8 @@
-import { TCategoryWithProducts } from "@/types/category";
+import { TCategory, TCategoryWithProducts } from "@/types/category";
 import { Filter, Pagination } from "@/types/misc";
 import { atom } from "jotai";
 
+export const categoriesAtom = atom<TCategory[]>([]);
 export const categoryInfoAtom = atom<TCategoryWithProducts>({
   id: "",
   name: "",

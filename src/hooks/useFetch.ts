@@ -1,6 +1,12 @@
 import React from "react";
 import axiosInterceptorInstance from "@/app/interceptor";
 
-export const useFetch = (url: string) => {
-  return axiosInterceptorInstance.get(url);
+type Options = {
+  enabled?: boolean;
+};
+
+export const useFetch = (url: string, options: Options) => {
+  const refetch = (url: string) => axiosInterceptorInstance.get(url);
+
+  return { refetch };
 };

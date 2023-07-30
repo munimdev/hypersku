@@ -1,22 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAtom } from "jotai";
 import Category from "@/components/home/category";
 import SearchBar from "@/components/ui/searchbar";
 import Section from "@/components/ui/section";
 import axiosInterceptorInstance from "./interceptor";
-import { TCategory } from "@/types/category";
 import { TProduct } from "@/types/product";
 import Link from "next/link";
+import { categoriesAtom } from "@/store/atoms";
 
 export default function Home() {
-  const [categories, setCategories] = useState<TCategory[]>([]);
   const [products, setProducts] = useState<TProduct[]>([]);
+  const [categories, setCategories] = useAtom(categoriesAtom);
 
   useEffect(() => {
     (async function () {
       const response = await axiosInterceptorInstance.get("/category");
-      console.log(response.data.categories);
       setCategories(response.data.categories);
     })();
   }, []);
@@ -24,7 +24,6 @@ export default function Home() {
   useEffect(() => {
     (async function () {
       const response = await axiosInterceptorInstance.get("/product?limit=4");
-      console.log(response.data.product);
       setProducts(response.data.product);
     })();
   }, []);
